@@ -1,8 +1,12 @@
 package pl.kmachuramika.minibank.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 import org.hibernate.validator.constraints.pl.PESEL;
 
 import javax.persistence.CascadeType;
@@ -11,18 +15,21 @@ import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
-import javax.persistence.SequenceGenerator;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import java.util.List;
+import java.util.UUID;
 
 @Data
-@SequenceGenerator(name = "GEN_ID_CL", sequenceName = "SEQ_CLIENT", allocationSize = 1)
 @Entity
+@NoArgsConstructor
+@AllArgsConstructor
 public class Client {
 
     @EqualsAndHashCode.Exclude
     @Id
+    private UUID id = UUID.randomUUID();
+
     @NotNull
     @PESEL
     private String pesel;
@@ -42,10 +49,11 @@ public class Client {
 
     @NotNull
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-    @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Account primaryAccount;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = false)
+    @OneToMany(cascade = CascadeType.ALL)
+    @LazyCollection(LazyCollectionOption.FALSE)
     private List<Account> subAccounts;
 
 }

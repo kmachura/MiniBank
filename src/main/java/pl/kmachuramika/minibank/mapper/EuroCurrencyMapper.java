@@ -5,8 +5,8 @@ import pl.kmachuramika.minibank.dtos.ExchangedCurrencyDTO;
 import pl.kmachuramika.minibank.model.Currency;
 
 @Mapper(componentModel = "spring")
-public interface AmericanCurrencyMapper {
+public interface EuroCurrencyMapper {
 
-    Currency mapToCurrency(ExchangedCurrencyDTO americanCurrencyDTO);
+    Currency mapToCurrency(ExchangedCurrencyDTO euroCurrencyDTO);
 
 }

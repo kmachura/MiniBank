@@ -3,8 +3,10 @@ package pl.kmachuramika.minibank.dtos;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
+import java.util.List;
+
 @Data
-public class AmericanCurrencyDTO {
+public class ExchangedCurrencyDTO {
 
     @JsonProperty("currency")
     private String name;
@@ -13,6 +15,6 @@ public class AmericanCurrencyDTO {
     private String shortcut;
 
     @JsonProperty("rates")
-    private RateDTO[] rates;
+    private List<RateDTO> rates;
 
 }

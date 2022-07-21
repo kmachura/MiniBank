@@ -1,10 +1,10 @@
 package pl.kmachuramika.minibank.controller;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
-import org.springframework.beans.factory.annotation.Autowired;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -17,76 +17,78 @@ import pl.kmachuramika.minibank.dtos.ClientDTO;
 import pl.kmachuramika.minibank.dtos.SubaccountDTO;
 import pl.kmachuramika.minibank.enums.CurrencyShortcutEnum;
 import pl.kmachuramika.minibank.model.Client;
-import pl.kmachuramika.minibank.service.ClientService;
+import pl.kmachuramika.minibank.service.ClientAddService;
+import pl.kmachuramika.minibank.service.ClientSearchService;
+import pl.kmachuramika.minibank.service.ClientExchangeService;
+import pl.kmachuramika.minibank.service.ClientUpdateService;
 
 import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/clients")
-@Api(tags = "Clients", produces = "application/json", consumes = "application/json")
+@Tag(name="Clients")
+@AllArgsConstructor
 public class ClientController {
 
-    private final ClientService clientService;
-
-    @Autowired
-    public ClientController(ClientService clientService) {
-        this.clientService = clientService;
-    }
+    private final ClientExchangeService clientExchangeService;
+    private final ClientAddService clientAddService;
+    private final ClientSearchService clientSearchService;
+    private final ClientUpdateService clientUpdateService;
 
     @GetMapping
-    @ApiOperation(value = "Find all clients")
+    @Operation(summary= "Find all clients")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Information was found."),
-            @ApiResponse(code = 400, message = "Bad request"),
-            @ApiResponse(code = 404, message = "Not found")
+            @ApiResponse(responseCode = "200", description = "Information was found."),
+            @ApiResponse(responseCode = "400", description = "Bad request"),
+            @ApiResponse(responseCode = "404", description = "Not found")
     })
     public ResponseEntity<List<ClientDTO>> findAll() {
-        return ResponseEntity.ok(clientService.findAll());
+        return ResponseEntity.ok(clientSearchService.findAll());
     }
 
     @GetMapping(value = "/{pesel}")
-    @ApiOperation(value = "Find client by pesel")
+    @Operation(summary = "Find client by pesel")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Information was found."),
-            @ApiResponse(code = 400, message = "Bad request"),
-            @ApiResponse(code = 404, message = "Not found")
+            @ApiResponse(responseCode = "200", description = "Information was found."),
+            @ApiResponse(responseCode = "400", description = "Bad request"),
+            @ApiResponse(responseCode = "404", description = "Not found")
     })
     public ResponseEntity<ClientDTO> findClientByPesel(@PathVariable("pesel") String pesel) {
-        return ResponseEntity.ok(clientService.findClientByPesel(pesel));
+        return ResponseEntity.ok(clientSearchService.findClientByPesel(pesel));
     }
 
     @PostMapping(value = "/add")
-    @ApiOperation(value = "Add new client")
+    @Operation(summary = "Add new client")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Client was created."),
-            @ApiResponse(code = 400, message = "Bad request"),
-            @ApiResponse(code = 409, message = "Client with given PESEL number already has an account."),
+            @ApiResponse(responseCode = "200", description = "Client was created."),
+            @ApiResponse(responseCode = "400", description = "Bad request"),
+            @ApiResponse(responseCode = "409", description = "Client with given PESEL number already has an account."),
     })
     public ResponseEntity<Client> addClient(@RequestBody ClientDTO clientDTO) {
-        return ResponseEntity.ok(clientService.addClient(clientDTO));
+        return ResponseEntity.ok(clientAddService.addClient(clientDTO));
     }
 
     @PatchMapping(value = "/addSubaccount")
-    @ApiOperation(value = "Add subaccount for an existing client")
+    @Operation(summary = "Add subaccount for an existing client")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Subaccount was added."),
-            @ApiResponse(code = 400, message = "Bad request"),
-            @ApiResponse(code = 404, message = "Client with given PESEL number doesn't exist."),
+            @ApiResponse(responseCode = "200", description = "Subaccount was added."),
+            @ApiResponse(responseCode = "400", description = "Bad request"),
+            @ApiResponse(responseCode = "404", description = "Client with given PESEL number doesn't exist."),
     })
     public ResponseEntity<Client> addSubaccount(@RequestBody SubaccountDTO subaccountDTO, String pesel) {
-        return ResponseEntity.ok(clientService.addSubaccount(subaccountDTO, pesel));
+        return ResponseEntity.ok(clientUpdateService.addSubaccount(subaccountDTO, pesel));
     }
 
     @PatchMapping("/exchangeMoney")
-    @ApiOperation(value = "Exchange money. Choose the currency to be exchanged and the right amount. After exchange appropriate account balance will be changed.")
+    @Operation(summary = "Exchange money. Choose the currency to be exchanged and the right amount. After exchange appropriate account balance will be changed.")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Money was exchanged"),
-            @ApiResponse(code = 400, message = "Bad request"),
-            @ApiResponse(code = 404, message = "Client and accounts not found")
+            @ApiResponse(responseCode = "200", description = "Money was exchanged"),
+            @ApiResponse(responseCode = "400", description = "Bad request"),
+            @ApiResponse(responseCode = "404", description = "Client and accounts not found")
     })
-    public ResponseEntity<ClientDTO> exchangeMoney(CurrencyShortcutEnum currencyShortcutEnum, String pesel, BigDecimal amountToChange) {
-        return ResponseEntity.ok(clientService.exchangeMoney(currencyShortcutEnum, pesel, amountToChange));
+    public ResponseEntity<ClientDTO> exchangeMoney(CurrencyShortcutEnum fromCurrency, CurrencyShortcutEnum toCurrency, String pesel, BigDecimal amountToChange) {
+        return ResponseEntity.ok(clientExchangeService.exchangeMoney(fromCurrency, toCurrency, pesel, amountToChange));
     }
 
 }

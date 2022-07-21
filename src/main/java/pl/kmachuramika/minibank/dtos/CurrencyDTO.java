@@ -1,11 +1,12 @@
 package pl.kmachuramika.minibank.dtos;
 
 import lombok.Data;
+import pl.kmachuramika.minibank.enums.CurrencyNameEnum;
 
 @Data
 public class CurrencyDTO {
 
-    private String name;
+    private CurrencyNameEnum nameEnum;
 
     private String shortcut;
 

@@ -1,6 +1,7 @@
 package pl.kmachuramika.minibank.util;
 
 import pl.kmachuramika.minibank.enums.AccountTypeEnum;
+import pl.kmachuramika.minibank.enums.CurrencyNameEnum;
 import pl.kmachuramika.minibank.enums.CurrencyShortcutEnum;
 import pl.kmachuramika.minibank.model.Account;
 import pl.kmachuramika.minibank.model.Client;
@@ -19,13 +20,13 @@ public class TestModelProvider {
         client.setPhoneNumber("123-123-123");
 
         Account primaryAccount = new Account();
-        primaryAccount.setAccountBalance(new BigDecimal(1000.00));
-        primaryAccount.setAccountNumber(123474678687l);
+        primaryAccount.setAccountBalance(BigDecimal.valueOf(1000.00));
+        primaryAccount.setAccountNumber("PL12347467868712312312312423");
         primaryAccount.setAccountType(AccountTypeEnum.PRIMARY);
 
         Currency currency = new Currency();
-        currency.setName("Polish Zloty");
-        currency.setShortcut(CurrencyShortcutEnum.PLN.toString());
+        currency.setName(CurrencyNameEnum.PLN.getName());
+        currency.setShortcut(CurrencyShortcutEnum.PLN);
 
         primaryAccount.setCurrency(currency);
 

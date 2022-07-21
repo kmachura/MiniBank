@@ -10,16 +10,14 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.RestClientException;
 import pl.kmachuramika.minibank.mapper.ClientMapper;
 import pl.kmachuramika.minibank.model.Client;
-import pl.kmachuramika.minibank.service.ClientService;
+import pl.kmachuramika.minibank.service.ClientAddService;
+import pl.kmachuramika.minibank.service.ClientSearchService;
 
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static pl.kmachuramika.minibank.util.TestModelProvider.getClient;
@@ -33,7 +31,10 @@ public class ClientControllerTest {
     private MockMvc mockMvc;
 
     @MockBean
-    private ClientService clientServiceMock;
+    private ClientAddService clientAddServiceMock;
+
+    @MockBean
+    private ClientSearchService clientSearchServiceMock;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -49,7 +50,7 @@ public class ClientControllerTest {
         String requestBody =  objectMapper.writeValueAsString(client);
 
         //when
-        when(clientServiceMock.addClient(clientMapper.mapToClientDTO(client))).thenReturn(new Client());
+        when(clientAddServiceMock.addClient(clientMapper.mapToClientDTO(client))).thenReturn(new Client());
 
         //then
         mockMvc.perform(post("/api/clients/add")
@@ -77,7 +78,7 @@ public class ClientControllerTest {
         Client client = getClient();
 
         //when
-        when(clientServiceMock.findClientByPesel(pesel)).thenReturn(clientMapper.mapToClientDTO(client));
+        when(clientSearchServiceMock.findClientByPesel(pesel)).thenReturn(clientMapper.mapToClientDTO(client));
 
         //then
         mockMvc.perform(get("/api/clients/" + pesel)

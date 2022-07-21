@@ -1,11 +1,16 @@
 package pl.kmachuramika.minibank.dtos;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import java.util.List;
+import java.util.UUID;
 
 @Data
 public class ClientDTO {
+
+    @JsonIgnore
+    private UUID id = UUID.randomUUID();
 
     private String pesel;
 
